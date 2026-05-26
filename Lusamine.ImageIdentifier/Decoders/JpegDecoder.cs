@@ -23,7 +23,10 @@ public sealed class JpegDecoder : IImageFormatDecoder
         if (!reader.TryReadExact(buf) || buf[0] != 0xFF || buf[1] != 0xD8)
             return null;
 
-        while (true)
+        // Refuse to scan beyond this limit to bound work on crafted files with no SOF.
+        const long maxScanBytes = 64 * 1024;
+
+        while (reader.Position <= maxScanBytes)
         {
             // Find the next marker: 0xFF followed by a marker code (skip fill bytes).
             if (!reader.TryReadExact(buf[..1]))
@@ -65,6 +68,8 @@ public sealed class JpegDecoder : IImageFormatDecoder
             if (!reader.TrySkip(segmentLength - 2))
                 return null;
         }
+
+        return null;
     }
 
     private static bool IsStartOfFrame(byte marker)

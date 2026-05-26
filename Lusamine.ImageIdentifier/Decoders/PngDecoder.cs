@@ -22,7 +22,7 @@ public sealed class PngDecoder : IImageFormatDecoder
 
         var width = BinaryPrimitives.ReadUInt32BigEndian(header.Slice(16, 4));
         var height = BinaryPrimitives.ReadUInt32BigEndian(header.Slice(20, 4));
-        if (width == 0 || height == 0)
+        if (width == 0 || height == 0 || width > int.MaxValue || height > int.MaxValue)
             return null;
 
         return new ImageInfo(ImageFormat.Png, (int)width, (int)height);

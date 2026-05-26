@@ -27,8 +27,10 @@ public sealed class TiffDecoder : IImageFormatDecoder
         var little = head[0] == 0x49;
         var ifdOffset = ReadU32(head.Slice(4, 4), little);
 
-        // Seek forward to the IFD. Backward offsets (rare/malformed) aren't supported.
-        if (ifdOffset < reader.Position || !reader.TrySkip(ifdOffset - reader.Position))
+        // Seek forward to the IFD. Backward offsets and suspiciously large offsets are rejected
+        // to prevent resource exhaustion on non-seekable streams.
+        const uint maxIfdOffset = 128 * 1024 * 1024;
+        if (ifdOffset < reader.Position || ifdOffset > maxIfdOffset || !reader.TrySkip(ifdOffset - reader.Position))
             return null;
 
         Span<byte> countBuf = stackalloc byte[2];
@@ -66,7 +68,7 @@ public sealed class TiffDecoder : IImageFormatDecoder
                 break;
         }
 
-        if (width is null or 0 || height is null or 0)
+        if (width is null or 0 || height is null or 0 || width > int.MaxValue || height > int.MaxValue)
             return null;
         return new ImageInfo(ImageFormat.Tiff, (int)width.Value, (int)height.Value);
     }

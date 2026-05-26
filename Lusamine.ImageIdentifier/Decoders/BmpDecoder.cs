@@ -33,8 +33,10 @@ public sealed class BmpDecoder : IImageFormatDecoder
             height = BinaryPrimitives.ReadInt32LittleEndian(header.Slice(22, 4));
         }
 
+        if (height == int.MinValue || width <= 0)
+            return null;
         height = Math.Abs(height);
-        if (width <= 0 || height <= 0)
+        if (height <= 0)
             return null;
 
         return new ImageInfo(ImageFormat.Bmp, width, height);
