@@ -16,6 +16,10 @@ public class ImageIdentifierTests
         yield return [ImageFormat.Webp, TestImages.WebpVp8Lossy(800, 600), 800, 600];
         yield return [ImageFormat.Webp, TestImages.WebpVp8Lossless(1024, 768), 1024, 768];
         yield return [ImageFormat.Tiff, TestImages.Tiff(512, 384), 512, 384];
+        yield return [ImageFormat.Svg, TestImages.Svg(800, 600), 800, 600];
+        yield return [ImageFormat.Svg, TestImages.SvgPxUnits(1920, 1080), 1920, 1080];
+        yield return [ImageFormat.Svg, TestImages.SvgViewBoxOnly(640, 480), 640, 480];
+        yield return [ImageFormat.Svg, TestImages.SvgWithXmlDecl(300, 150), 300, 150];
     }
 
     [Theory]
@@ -86,6 +90,59 @@ public class ImageIdentifierTests
         var truncated = TestImages.Png(10, 10)[..12];
         using var stream = new MemoryStream(truncated);
         Assert.Null(_identifier.Identify(stream));
+    }
+
+    public static IEnumerable<object[]> RealSamples()
+    {
+        yield return ["die.png",        ImageFormat.Png,  800,  600];
+        yield return ["clock.gif",      ImageFormat.Gif,  900,  900];
+        yield return ["flower.jpg",     ImageFormat.Jpeg, 500,  477];
+        yield return ["wikipedia.webp", ImageFormat.Webp, 1024, 935];
+        yield return ["logo.svg",       ImageFormat.Svg,  300,  300];
+    }
+
+    [Theory]
+    [MemberData(nameof(RealSamples))]
+    public void Identify_real_image_seekable(string file, ImageFormat format, int width, int height)
+    {
+        using var stream = OpenResource(file);
+
+        var info = _identifier.Identify(stream);
+
+        Assert.NotNull(info);
+        Assert.Equal(format, info.Format);
+        Assert.Equal(width, info.Width);
+        Assert.Equal(height, info.Height);
+    }
+
+    [Theory]
+    [MemberData(nameof(RealSamples))]
+    public void Identify_real_image_non_seekable(string file, ImageFormat format, int width, int height)
+    {
+        var bytes = ReadResource(file);
+        using var stream = new ForwardOnlyStream(bytes);
+
+        var info = _identifier.Identify(stream);
+
+        Assert.NotNull(info);
+        Assert.Equal(format, info.Format);
+        Assert.Equal(width, info.Width);
+        Assert.Equal(height, info.Height);
+    }
+
+    private static Stream OpenResource(string name)
+    {
+        var asm = typeof(ImageIdentifierTests).Assembly;
+        return asm.GetManifestResourceStream($"Lusamine.ImageIdentifier.Tests.Images.{name}")
+            ?? throw new InvalidOperationException($"Embedded resource '{name}' not found.");
+    }
+
+    private static byte[] ReadResource(string name)
+    {
+        using var s = OpenResource(name);
+        var ms = new MemoryStream();
+        s.CopyTo(ms);
+        return ms.ToArray();
     }
 
     [Fact]

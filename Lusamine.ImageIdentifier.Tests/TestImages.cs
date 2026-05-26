@@ -1,4 +1,5 @@
 using System.Buffers.Binary;
+using System.Text;
 
 namespace Lusamine.ImageIdentifier.Tests;
 
@@ -113,6 +114,22 @@ internal static class TestImages
         b.AddRange([0x03, 0x01, 0x22, 0x00]); // partial component data
         return b.ToArray();
     }
+
+    public static byte[] Svg(int width, int height) =>
+        Encoding.UTF8.GetBytes(
+            $"""<svg xmlns="http://www.w3.org/2000/svg" width="{width}" height="{height}"></svg>""");
+
+    public static byte[] SvgPxUnits(int width, int height) =>
+        Encoding.UTF8.GetBytes(
+            $"""<svg xmlns="http://www.w3.org/2000/svg" width="{width}px" height="{height}px"></svg>""");
+
+    public static byte[] SvgViewBoxOnly(int width, int height) =>
+        Encoding.UTF8.GetBytes(
+            $"""<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {width} {height}"></svg>""");
+
+    public static byte[] SvgWithXmlDecl(int width, int height) =>
+        Encoding.UTF8.GetBytes(
+            $"""<?xml version="1.0" encoding="UTF-8"?><svg xmlns="http://www.w3.org/2000/svg" width="{width}" height="{height}"></svg>""");
 
     /// <summary>Little-endian TIFF whose IFD sits past the 32-byte sniff window.</summary>
     public static byte[] Tiff(int width, int height)

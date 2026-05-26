@@ -41,7 +41,8 @@ public sealed class ImageIdentifier
         new BmpDecoder(),
         new WebpDecoder(),
         new TiffDecoder(),
-        new IcoDecoder()
+        new IcoDecoder(),
+        new SvgDecoder()
     ];
 
     /// <summary>

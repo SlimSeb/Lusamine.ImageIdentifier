@@ -22,4 +22,8 @@
       <ProjectReference Include="..\Lusamine.ImageIdentifier\Lusamine.ImageIdentifier.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <EmbeddedResource Include="Images\**" />
+    </ItemGroup>
+
 </Project>

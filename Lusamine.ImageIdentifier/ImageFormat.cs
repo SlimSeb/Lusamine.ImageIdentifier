@@ -25,5 +25,8 @@ public enum ImageFormat
     Tiff,
 
     /// <summary>Windows icon / cursor.</summary>
-    Ico
+    Ico,
+
+    /// <summary>Scalable Vector Graphics.</summary>
+    Svg
 }
