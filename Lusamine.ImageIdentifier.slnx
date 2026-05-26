@@ -1,0 +1,6 @@
+<Solution>
+  <Project Path="Lusamine.ImageIdentifier.Benchmarks\Lusamine.ImageIdentifier.Benchmarks.csproj" />
+  <Project Path="Lusamine.ImageIdentifier.Sample/Lusamine.ImageIdentifier.Sample.csproj" />
+  <Project Path="Lusamine.ImageIdentifier.Tests/Lusamine.ImageIdentifier.Tests.csproj" />
+  <Project Path="Lusamine.ImageIdentifier/Lusamine.ImageIdentifier.csproj" />
+</Solution>
