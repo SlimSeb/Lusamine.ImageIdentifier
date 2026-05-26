@@ -3,7 +3,7 @@ using Lusamine.ImageIdentifier.Decoders;
 namespace Lusamine.ImageIdentifier;
 
 /// <summary>
-/// Identifies an image's format and pixel dimensions by reading only its header — never
+/// Identifies an image's format and pixel dimensions by reading only its header. Never
 /// loading the full image into memory. Works over any readable <see cref="Stream"/> and, for
 /// non-seekable streams, by reading bytes forward only.
 /// </summary>

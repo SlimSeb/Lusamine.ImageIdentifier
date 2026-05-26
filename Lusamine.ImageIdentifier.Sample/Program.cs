@@ -7,7 +7,7 @@ if (args.Length == 0)
     Console.WriteLine("Usage: dotnet run -- <image-path> [<image-path> ...]");
     Console.WriteLine();
     Console.WriteLine("Identifies each image's format and dimensions by reading only its");
-    Console.WriteLine("header — the file is never fully loaded into memory.");
+    Console.WriteLine("header. The file is never fully loaded into memory.");
     return;
 }
 

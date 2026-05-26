@@ -4,7 +4,7 @@ namespace Lusamine.ImageIdentifier;
 /// Presents an already-sniffed header prefix followed by the rest of an underlying reader as
 /// a single continuous stream starting at position 0. This lets the identifier peek at a
 /// file's leading bytes to choose a decoder, then hand that decoder a reader it can walk from
-/// the very beginning — without re-reading or buffering anything beyond the prefix.
+/// the very beginning, without re-reading or buffering anything beyond the prefix.
 /// </summary>
 public sealed class PrefixedByteReader : IByteReader
 {

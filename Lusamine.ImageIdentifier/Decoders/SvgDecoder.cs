@@ -107,7 +107,7 @@ public sealed class SvgDecoder : IImageFormatDecoder
         if (pos >= rest.Length) return 0;
         var after = rest[pos];
 
-        // Bare number ("100") or px suffix ("100px") — both treated as pixel values.
+        // Bare number ("100") or px suffix ("100px") : both treated as pixel values.
         if (after == quote || IsWs(after)) return value;
         if ((after | 0x20) == 'p' &&
             pos + 1 < rest.Length && (rest[pos + 1] | 0x20) == 'x' &&

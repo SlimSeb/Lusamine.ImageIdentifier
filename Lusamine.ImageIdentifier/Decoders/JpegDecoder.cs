@@ -40,7 +40,7 @@ public sealed class JpegDecoder : IImageFormatDecoder
                 marker = buf[0];
             } while (marker == 0xFF);
 
-            // Standalone markers (no length): SOI, EOI, TEM, RSTn — nothing to size.
+            // Standalone markers (no length): SOI, EOI, TEM, RSTn : nothing to size.
             if (marker is 0x01 or 0xD8 or 0xD9 || (marker >= 0xD0 && marker <= 0xD7))
                 continue;
 

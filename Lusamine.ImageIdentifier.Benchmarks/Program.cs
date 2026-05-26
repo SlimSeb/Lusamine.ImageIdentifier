@@ -22,7 +22,7 @@ public class IdentifyBenchmarks
 
     /// <summary>
     /// Image dimensions. Large enough that fully decoding (which this library never does)
-    /// would dwarf header parsing — highlighting the streaming advantage.
+    /// would dwarf header parsing, highlighting the streaming advantage.
     /// </summary>
     private const int Width = 4000;
     private const int Height = 3000;

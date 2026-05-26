@@ -1,7 +1,7 @@
 namespace Lusamine.ImageIdentifier.Decoders;
 
 /// <summary>
-/// WebP: a RIFF container ("RIFF"...."WEBP") wrapping one of three bitstream chunks —
+/// WebP: a RIFF container ("RIFF"...."WEBP") wrapping one of three bitstream chunks,
 /// "VP8 " (lossy), "VP8L" (lossless) or "VP8X" (extended). Each encodes the canvas size
 /// differently; all variants fit within the first 32 header bytes.
 /// </summary>
