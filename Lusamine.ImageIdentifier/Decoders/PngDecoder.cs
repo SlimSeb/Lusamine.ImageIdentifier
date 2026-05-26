@@ -10,8 +10,6 @@ public sealed class PngDecoder : IImageFormatDecoder
 {
     private static ReadOnlySpan<byte> Signature => [0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A];
 
-    public ImageFormat Format => ImageFormat.Png;
-
     public bool CanDecode(ReadOnlySpan<byte> header) =>
         header.Length >= Signature.Length && header[..Signature.Length].SequenceEqual(Signature);
 

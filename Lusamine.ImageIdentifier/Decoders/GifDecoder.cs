@@ -11,8 +11,6 @@ public sealed class GifDecoder : IImageFormatDecoder
     private static ReadOnlySpan<byte> Gif87a => "GIF87a"u8;
     private static ReadOnlySpan<byte> Gif89a => "GIF89a"u8;
 
-    public ImageFormat Format => ImageFormat.Gif;
-
     public bool CanDecode(ReadOnlySpan<byte> header)
     {
         if (header.Length < 6)

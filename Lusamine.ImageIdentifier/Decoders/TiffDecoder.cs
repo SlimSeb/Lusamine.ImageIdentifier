@@ -12,8 +12,6 @@ public sealed class TiffDecoder : IImageFormatDecoder
     private static ReadOnlySpan<byte> LittleEndian => [0x49, 0x49, 0x2A, 0x00];
     private static ReadOnlySpan<byte> BigEndian => [0x4D, 0x4D, 0x00, 0x2A];
 
-    public ImageFormat Format => ImageFormat.Tiff;
-
     public bool CanDecode(ReadOnlySpan<byte> header) =>
         header.Length >= 4 &&
         (header[..4].SequenceEqual(LittleEndian) || header[..4].SequenceEqual(BigEndian));

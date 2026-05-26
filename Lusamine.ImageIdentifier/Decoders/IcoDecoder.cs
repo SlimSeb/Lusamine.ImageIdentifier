@@ -7,8 +7,6 @@ namespace Lusamine.ImageIdentifier.Decoders;
 /// </summary>
 public sealed class IcoDecoder : IImageFormatDecoder
 {
-    public ImageFormat Format => ImageFormat.Ico;
-
     public bool CanDecode(ReadOnlySpan<byte> header)
     {
         if (header.Length < 6)

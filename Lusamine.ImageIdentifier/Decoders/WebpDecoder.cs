@@ -7,8 +7,6 @@ namespace Lusamine.ImageIdentifier.Decoders;
 /// </summary>
 public sealed class WebpDecoder : IImageFormatDecoder
 {
-    public ImageFormat Format => ImageFormat.Webp;
-
     public bool CanDecode(ReadOnlySpan<byte> header) =>
         header.Length >= 12 &&
         header[..4].SequenceEqual("RIFF"u8) &&

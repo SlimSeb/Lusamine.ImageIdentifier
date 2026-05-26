@@ -9,8 +9,6 @@ namespace Lusamine.ImageIdentifier.Decoders;
 /// </summary>
 public sealed class BmpDecoder : IImageFormatDecoder
 {
-    public ImageFormat Format => ImageFormat.Bmp;
-
     public bool CanDecode(ReadOnlySpan<byte> header) =>
         header.Length >= 2 && header[0] == (byte)'B' && header[1] == (byte)'M';
 

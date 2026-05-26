@@ -11,8 +11,6 @@ public sealed class SvgDecoder : IImageFormatDecoder
 {
     private const int MaxScanBytes = 4096;
 
-    public ImageFormat Format => ImageFormat.Svg;
-
     public bool CanDecode(ReadOnlySpan<byte> header)
     {
         var h = StripBom(header);

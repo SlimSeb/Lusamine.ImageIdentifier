@@ -5,9 +5,6 @@ namespace Lusamine.ImageIdentifier;
 /// </summary>
 public interface IImageFormatDecoder
 {
-    /// <summary>The format this decoder handles.</summary>
-    ImageFormat Format { get; }
-
     /// <summary>
     /// Returns <c>true</c> if <paramref name="header"/> begins with this format's signature.
     /// </summary>

@@ -167,7 +167,6 @@ public class ImageIdentifierTests
     private sealed class GifDecoderOnly : IImageFormatDecoder
     {
         private readonly Decoders.GifDecoder _inner = new();
-        public ImageFormat Format => _inner.Format;
         public bool CanDecode(ReadOnlySpan<byte> header) => _inner.CanDecode(header);
         public ImageInfo? Decode(ReadOnlySpan<byte> header, IByteReader reader) =>
             _inner.Decode(header, reader);

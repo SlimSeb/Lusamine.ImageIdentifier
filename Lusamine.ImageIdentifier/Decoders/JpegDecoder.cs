@@ -10,8 +10,6 @@ namespace Lusamine.ImageIdentifier.Decoders;
 /// </summary>
 public sealed class JpegDecoder : IImageFormatDecoder
 {
-    public ImageFormat Format => ImageFormat.Jpeg;
-
     public bool CanDecode(ReadOnlySpan<byte> header) =>
         header.Length >= 2 && header[0] == 0xFF && header[1] == 0xD8;
 
