@@ -7,7 +7,7 @@ namespace Lusamine.ImageIdentifier;
 /// loading the full image into memory. Works over any readable <see cref="Stream"/> and, for
 /// non-seekable streams, by reading bytes forward only.
 /// </summary>
-public sealed class ImageIdentifier
+public sealed class ImageIdentifier : IImageIdentifier
 {
     /// <summary>
     /// Bytes sniffed up front for format detection. Large enough that every header-resident
@@ -81,7 +81,6 @@ public sealed class ImageIdentifier
         {
             if (!decoder.CanDecode(header))
                 continue;
-            // Replay the sniffed prefix so the decoder can read from position 0 onward.
             var combined = new PrefixedByteReader(prefix, reader);
             return decoder.Decode(header, combined);
         }
