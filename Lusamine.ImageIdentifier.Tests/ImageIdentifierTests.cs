@@ -164,6 +164,21 @@ public class ImageIdentifierTests
         Assert.Equal(ImageFormat.Gif, identifier.Identify(gif)!.Format);
     }
 
+    [Fact]
+    public async Task Identification_OverHttp()
+    {
+        using var httpClient = new HttpClient();
+        const string url = "https://i.imgur.com/1HPHmrQ.png";
+        await using var stream = await httpClient.GetStreamAsync(url);
+
+        var imageInfo = _identifier.Identify(stream);
+
+        Assert.NotNull(imageInfo);
+        Assert.Equal(ImageFormat.Png, imageInfo.Format);
+        Assert.Equal(1254, imageInfo.Width);
+        Assert.Equal(1254, imageInfo.Height);
+    }
+
     private sealed class GifDecoderOnly : IImageFormatDecoder
     {
         private readonly Decoders.GifDecoder _inner = new();
