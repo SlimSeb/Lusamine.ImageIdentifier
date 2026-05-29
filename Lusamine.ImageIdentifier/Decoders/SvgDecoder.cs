@@ -16,7 +16,6 @@ public sealed class SvgDecoder : IImageFormatDecoder
         var h = StripBom(header);
         if (FindSvgTag(h) >= 0)
             return true;
-        // Also accept files that open with an XML declaration; Decode will confirm the root is <svg>.
         return h.Length >= 5 &&
                h[0] == '<' && h[1] == '?' &&
                (h[2] | 0x20) == 'x' && (h[3] | 0x20) == 'm' && (h[4] | 0x20) == 'l';
@@ -62,7 +61,7 @@ public sealed class SvgDecoder : IImageFormatDecoder
         data.Length >= 3 && data[0] == 0xEF && data[1] == 0xBB && data[2] == 0xBF
             ? data[3..] : data;
 
-    // Finds the byte offset of the first <svg...> open tag (case-insensitive element name).
+    // Finds the byte offset of the first <svg...> open tag
     private static int FindSvgTag(ReadOnlySpan<byte> data)
     {
         for (var i = 0; i + 4 <= data.Length; i++)
@@ -77,7 +76,7 @@ public sealed class SvgDecoder : IImageFormatDecoder
         return -1;
     }
 
-    // Returns the integer pixel value of a dimensional attribute, or 0 if absent/relative.
+    // Returns the integer pixel value of an attribute, 0 if absent
     private static int GetPixelAttr(ReadOnlySpan<byte> tag, ReadOnlySpan<byte> name)
     {
         var idx = FindAttr(tag, name);
@@ -97,7 +96,6 @@ public sealed class SvgDecoder : IImageFormatDecoder
         if (pos == numStart) return 0;
         var value = ParseInt(rest.Slice(numStart, pos - numStart));
 
-        // Skip optional fractional part (truncate to integer).
         if (pos < rest.Length && rest[pos] == '.')
         {
             pos++;
@@ -117,7 +115,7 @@ public sealed class SvgDecoder : IImageFormatDecoder
         return 0; // relative unit (%, em, cm, …)
     }
 
-    // Parses viewBox="min-x min-y width height" and returns the width/height integers.
+    // Parses viewBox="min-x min-y width height"
     private static bool TryParseViewBox(ReadOnlySpan<byte> tag, out int width, out int height)
     {
         width = 0;
@@ -141,7 +139,7 @@ public sealed class SvgDecoder : IImageFormatDecoder
             while (pos < rest.Length && (IsWs(rest[pos]) || rest[pos] == ',')) pos++;
             if (pos >= rest.Length || rest[pos] == quote) return false;
 
-            // min-x/min-y may be negative; width/height must be positive.
+            // min-x/min-y may be negative; width/height must be positive
             var negative = rest[pos] == '-';
             if (negative)
             {
@@ -154,7 +152,7 @@ public sealed class SvgDecoder : IImageFormatDecoder
             if (pos == start) return false;
             if (n >= 2) nums[n] = ParseInt(rest.Slice(start, pos - start));
 
-            // Skip fractional part.
+            // Skip fractional part
             if (pos < rest.Length && rest[pos] == '.') { pos++; while (pos < rest.Length && rest[pos] >= '0' && rest[pos] <= '9') pos++; }
         }
 
@@ -163,7 +161,7 @@ public sealed class SvgDecoder : IImageFormatDecoder
         return width > 0 && height > 0;
     }
 
-    // Finds the start of an attribute name inside a tag, verifying word boundaries.
+    // Finds the start of an attribute name inside a tag, verifying word boundaries
     private static int FindAttr(ReadOnlySpan<byte> tag, ReadOnlySpan<byte> name)
     {
         var offset = 0;
@@ -172,9 +170,9 @@ public sealed class SvgDecoder : IImageFormatDecoder
             var rel = tag[offset..].IndexOf(name);
             if (rel < 0) return -1;
             var abs = offset + rel;
-            // Must be preceded by whitespace (not in the middle of another identifier).
+            // Must be preceded by whitespace (not in the middle of another identifier)
             if (abs > 0 && !IsWs(tag[abs - 1])) { offset = abs + 1; continue; }
-            // Must be followed by '=', whitespace, or end of tag (word boundary).
+            // Must be followed by '=', whitespace, or end of tag
             var after = abs + name.Length;
             if (after < tag.Length && !IsWs(tag[after]) && tag[after] != '=') { offset = abs + 1; continue; }
             return abs;

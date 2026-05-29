@@ -64,7 +64,7 @@ And on .NET 10, macOS Tahoe 26.4, Apple M3:
 | Lusamine   | tiff   |         78.10 ns |         1.00 |     256 B |
 | ImageSharp | tiff   |     36,514.15 ns |       467.55 | 220,440 B |
 
-+Lusamine reads only the image header (typically under 1 KB), while ImageSharp decodes significantly more of the file. The result is consistently **one to several orders of magnitude faster** across formats — from ~11–13x for BMP up to hundreds of thousands of times faster for GIF — with a fraction of the allocations.
+Lusamine reads only the image header (typically under 1 KB), while ImageSharp decodes significantly more of the file. The result is consistently **one to several orders of magnitude faster** across formats, from ~11–13x for BMP up to hundreds of thousands of times faster for GIF, with a fraction of the allocations.
 
 ## Extensibility
 
