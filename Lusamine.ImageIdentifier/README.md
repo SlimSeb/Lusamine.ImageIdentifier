@@ -31,13 +31,13 @@ reader skips forward by reading and discarding, so it still never buffers the wh
 A few formats keep their dimensions past the first header bytes; these are reached by
 skipping forward, never by loading the file:
 
-- **JPEG** — the `SOFn` marker is located by walking the marker chain, scanning up to 2 MB
+- **JPEG** : the `SOFn` marker is located by walking the marker chain, scanning up to 2 MB
   to clear large `APPn` metadata (a max-size EXIF block plus stacked ICC-profile segments).
-- **TIFF / BigTIFF** — both the classic (magic 42, 32-bit offsets) and BigTIFF (magic 43,
+- **TIFF / BigTIFF** : both the classic (magic 42, 32-bit offsets) and BigTIFF (magic 43,
   64-bit offsets) variants are supported. The first IFD is read wherever it sits, up to a
   128 MB offset cap. Backward IFD offsets are rejected since the reader is forward-only.
-- **SVG** — `width`/`height` are read first (bare or `px` values), falling back to `viewBox`.
-  Relative units (`%`, `em`, …) can't be resolved to pixels, so a file with only relative
+- **SVG** : `width`/`height` are read first (bare or `px` values), falling back to `viewBox`.
+  Relative units (`%`, `em`, ...) can't be resolved to pixels, so a file with only relative
   sizes and no `viewBox` returns `null`.
 
 These caps bound work on crafted input; ordinary files resolve within the first read.
@@ -80,7 +80,7 @@ And on .NET 10, macOS Tahoe 26.4, Apple M3:
 
 Lusamine reads only the image header (typically under 1 KB), while ImageSharp decodes significantly more of the file. The result is consistently **one to several orders of magnitude faster** across formats, from ~11–13x for BMP up to hundreds of thousands of times faster for GIF, with a fraction of the allocations.
 
-The advantage is just as large on the failure paths — unrecognized, empty, or corrupt input. Lusamine returns `null` cheaply and never allocates an exception, whereas ImageSharp throws and pays for it (.NET 10, macOS Tahoe 26.4, Apple M3):
+The advantage is just as large on the failure paths : unrecognized, empty, or corrupt input. Lusamine returns `null` cheaply and never allocates an exception, whereas ImageSharp throws and pays for it (.NET 10, macOS Tahoe 26.4, Apple M3):
 
 | Library    | Scenario      |        Mean |  Ratio | Allocated |
 |------------|---------------|------------:|-------:|----------:|

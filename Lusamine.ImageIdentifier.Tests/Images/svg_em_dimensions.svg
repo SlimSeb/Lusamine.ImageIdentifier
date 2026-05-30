@@ -2,7 +2,7 @@
      width="20em" height="10em"
      viewBox="0 0 320 160">
   <!-- width/height in em units. Pixel size depends on the font-size of the
-       containing element — unknowable from the file alone. -->
+       containing element : unknowable from the file alone. -->
   <rect x="0" y="0" width="320" height="160" fill="#fff3cd"/>
   <text x="160" y="85" text-anchor="middle" fill="#856404" font-size="16">20em × 10em</text>
 </svg>

@@ -84,11 +84,11 @@ public class EdgeCaseBenchmarks
 
     /// <summary>
     /// <list type="bullet">
-    /// <item><c>empty</c> — zero bytes; nothing to sniff.</item>
-    /// <item><c>random</c> — 4 KB of noise matching no signature (unsupported format).</item>
-    /// <item><c>text</c> — UTF-8 text, the classic "wrong file" case.</item>
-    /// <item><c>truncated-png</c> — a valid PNG signature with the rest of the header cut off.</item>
-    /// <item><c>corrupt-jpeg</c> — a valid JPEG magic followed by garbage instead of segments.</item>
+    /// <item><c>empty</c> : zero bytes; nothing to sniff.</item>
+    /// <item><c>random</c> : 4 KB of noise matching no signature (unsupported format).</item>
+    /// <item><c>text</c> : UTF-8 text, the classic "wrong file" case.</item>
+    /// <item><c>truncated-png</c> : a valid PNG signature with the rest of the header cut off.</item>
+    /// <item><c>corrupt-jpeg</c> : a valid JPEG magic followed by garbage instead of segments.</item>
     /// </list>
     /// </summary>
     [Params("empty", "random", "text", "truncated-png", "corrupt-jpeg")]
