@@ -21,8 +21,10 @@ public sealed class JpegDecoder : IImageFormatDecoder
         if (!reader.TryReadExact(buf) || buf[0] != 0xFF || buf[1] != 0xD8)
             return null;
 
-        // Refuse to scan beyond this limit to bound work on crafted files with no SOF.
-        const long maxScanBytes = 64 * 1024;
+        // Refuse to scan beyond this limit to bound work on crafted files with no SOF. 2 MB
+        // comfortably covers a max-size EXIF block plus stacked ICC-profile APP2 segments,
+        // which can push the SOF well past the first 64 KB on real camera/editor output.
+        const long maxScanBytes = 2 * 1024 * 1024;
 
         while (reader.Position <= maxScanBytes)
         {

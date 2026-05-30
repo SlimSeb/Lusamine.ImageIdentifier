@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg"
+     width="400" height="400"
+     viewBox="0 0 200 100">
+  <!-- width/height say 400×400 (square), viewBox says 200×100 (2:1 landscape).
+       The SVG spec resolves this via preserveAspectRatio, but a header reader
+       that only looks at width/height gets the wrong aspect ratio.
+       Content is letterboxed/pillarboxed depending on preserveAspectRatio. -->
+  <rect x="0" y="0" width="200" height="100" fill="#f0ad4e"/>
+  <ellipse cx="100" cy="50" rx="90" ry="40" fill="#d9534f" opacity="0.6"/>
+  <text x="100" y="55" text-anchor="middle" fill="white" font-size="14">conflicting aspect</text>
+</svg>

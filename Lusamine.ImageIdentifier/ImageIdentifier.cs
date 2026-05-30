@@ -28,7 +28,8 @@ public sealed class ImageIdentifier : IImageIdentifier
     /// </summary>
     public ImageIdentifier(IEnumerable<IImageFormatDecoder> decoders)
     {
-        ArgumentNullException.ThrowIfNull(decoders);
+        if (decoders is null)
+            throw new ArgumentNullException(nameof(decoders));
         _decoders = decoders.ToArray();
     }
 
@@ -52,7 +53,8 @@ public sealed class ImageIdentifier : IImageIdentifier
     /// </summary>
     public ImageInfo? Identify(Stream stream)
     {
-        ArgumentNullException.ThrowIfNull(stream);
+        if (stream is null)
+            throw new ArgumentNullException(nameof(stream));
         return Identify(new StreamByteReader(stream));
     }
 
@@ -62,7 +64,8 @@ public sealed class ImageIdentifier : IImageIdentifier
     /// </summary>
     public ImageInfo? Identify(IByteReader reader)
     {
-        ArgumentNullException.ThrowIfNull(reader);
+        if (reader is null)
+            throw new ArgumentNullException(nameof(reader));
 
         var buffer = new byte[HeaderSize];
         var read = 0;

@@ -28,6 +28,20 @@ Only the leading header bytes are read (typically well under 1 KB), so identifyi
 multi-megabyte image is allocation-light and near-instant. For non-seekable streams the
 reader skips forward by reading and discarding, so it still never buffers the whole file.
 
+A few formats keep their dimensions past the first header bytes; these are reached by
+skipping forward, never by loading the file:
+
+- **JPEG** — the `SOFn` marker is located by walking the marker chain, scanning up to 2 MB
+  to clear large `APPn` metadata (a max-size EXIF block plus stacked ICC-profile segments).
+- **TIFF / BigTIFF** — both the classic (magic 42, 32-bit offsets) and BigTIFF (magic 43,
+  64-bit offsets) variants are supported. The first IFD is read wherever it sits, up to a
+  128 MB offset cap. Backward IFD offsets are rejected since the reader is forward-only.
+- **SVG** — `width`/`height` are read first (bare or `px` values), falling back to `viewBox`.
+  Relative units (`%`, `em`, …) can't be resolved to pixels, so a file with only relative
+  sizes and no `viewBox` returns `null`.
+
+These caps bound work on crafted input; ordinary files resolve within the first read.
+
 ## Performance
 
 Benchmarks run against [ImageSharp](https://github.com/SixLabors/ImageSharp)'s Image.Identify on .NET 10, Windows 11, Intel Core i7-11800H:
@@ -65,6 +79,21 @@ And on .NET 10, macOS Tahoe 26.4, Apple M3:
 | ImageSharp | tiff   |     36,514.15 ns |       467.55 | 220,440 B |
 
 Lusamine reads only the image header (typically under 1 KB), while ImageSharp decodes significantly more of the file. The result is consistently **one to several orders of magnitude faster** across formats, from ~11–13x for BMP up to hundreds of thousands of times faster for GIF, with a fraction of the allocations.
+
+The advantage is just as large on the failure paths — unrecognized, empty, or corrupt input. Lusamine returns `null` cheaply and never allocates an exception, whereas ImageSharp throws and pays for it (.NET 10, macOS Tahoe 26.4, Apple M3):
+
+| Library    | Scenario      |        Mean |  Ratio | Allocated |
+|------------|---------------|------------:|-------:|----------:|
+| Lusamine   | corrupt-jpeg  |    85.79 ns |   1.00 |     192 B |
+| ImageSharp | corrupt-jpeg  | 6,180.97 ns |  72.05 |  10,696 B |
+| Lusamine   | empty         |    37.55 ns |   1.00 |     152 B |
+| ImageSharp | empty         | 3,475.82 ns |  92.57 |   2,185 B |
+| Lusamine   | random        |    55.63 ns |   1.00 |     184 B |
+| ImageSharp | random        | 5,295.91 ns |  95.22 |   1,368 B |
+| Lusamine   | text          |    47.98 ns |   1.00 |     152 B |
+| ImageSharp | text          | 3,593.08 ns |  74.92 |   2,313 B |
+| Lusamine   | truncated-png |    30.53 ns |   1.00 |     256 B |
+| ImageSharp | truncated-png | 5,532.30 ns | 181.27 |   1,600 B |
 
 ## Extensibility
 

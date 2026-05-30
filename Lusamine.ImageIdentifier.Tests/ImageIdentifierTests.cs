@@ -130,6 +130,94 @@ public class ImageIdentifierTests
         Assert.Equal(height, info.Height);
     }
 
+    /// <summary>
+    /// Real files crafted to stress the awkward corners of each format, all of which the
+    /// header-only approach resolves: SVGs whose pixel size must fall back to <c>viewBox</c>,
+    /// JPEGs whose SOF marker sits behind large APPn metadata, and TIFFs (classic and BigTIFF)
+    /// whose first IFD is far from the header.
+    /// </summary>
+    public static IEnumerable<object[]> EdgeCaseIdentified()
+    {
+        // width/height ("400") take precedence over the conflicting viewBox.
+        yield return ["svg_conflicting.svg",        ImageFormat.Svg,  400, 400];
+        // em units can't be resolved to pixels, so the viewBox supplies the size.
+        yield return ["svg_em_dimensions.svg",      ImageFormat.Svg,  320, 160];
+        // Percentages can't be resolved either; viewBox fallback again.
+        yield return ["svg_percent_dimensions.svg", ImageFormat.Svg,  400, 200];
+        // No width/height at all; dimensions come straight from the viewBox.
+        yield return ["svg_viewbox_only.svg",       ImageFormat.Svg,  200, 100];
+        // SOF preceded by a JFIF APP0 then a max-size Exif APP1 (SOF at byte 65,626).
+        yield return ["jpeg_app0_then_app1.jpg",    ImageFormat.Jpeg,   8,   8];
+        // SOF behind a single monolithic max-size Exif APP1 (SOF at byte 65,608).
+        yield return ["jpeg_fat_app1.jpg",          ImageFormat.Jpeg,   8,   8];
+        // SOF behind two stacked max-size ICC APP2 segments (SOF at byte 131,145).
+        yield return ["jpeg_many_app2.jpg",         ImageFormat.Jpeg,   8,   8];
+        // First IFD lives ~200 KB in; reachable by skipping forward.
+        yield return ["tiff_far_ifd.tif",           ImageFormat.Tiff,   4,   4];
+        // Pixel strips precede the IFD, so the IFD offset is far from the header.
+        yield return ["tiff_backward_ifd.tif",      ImageFormat.Tiff,   4,   4];
+        // Multiple chained IFDs; only the first is read.
+        yield return ["tiff_chained_far.tif",       ImageFormat.Tiff,   4,   4];
+        // BigTIFF: magic 43, 64-bit offsets, 20-byte IFD entries.
+        yield return ["tiff_bigtiff.tif",           ImageFormat.Tiff,   4,   4];
+    }
+
+    [Theory]
+    [MemberData(nameof(EdgeCaseIdentified))]
+    public void Identify_edge_case_seekable(string file, ImageFormat format, int width, int height)
+    {
+        using var stream = OpenResource(file);
+
+        var info = _identifier.Identify(stream);
+
+        Assert.NotNull(info);
+        Assert.Equal(format, info.Format);
+        Assert.Equal(width, info.Width);
+        Assert.Equal(height, info.Height);
+    }
+
+    [Theory]
+    [MemberData(nameof(EdgeCaseIdentified))]
+    public void Identify_edge_case_non_seekable(string file, ImageFormat format, int width, int height)
+    {
+        // Forward-only proves the far-IFD TIFFs are reached by reading-and-discarding,
+        // never by seeking.
+        using var stream = new ForwardOnlyStream(ReadResource(file));
+
+        var info = _identifier.Identify(stream);
+
+        Assert.NotNull(info);
+        Assert.Equal(format, info.Format);
+        Assert.Equal(width, info.Width);
+        Assert.Equal(height, info.Height);
+    }
+
+    /// <summary>
+    /// Real files that legitimately cannot yield raster dimensions from the header alone, so
+    /// identification returns <c>null</c> by design.
+    /// </summary>
+    public static IEnumerable<object[]> EdgeCaseUnsupported()
+    {
+        // No width/height/viewBox: an SVG with no intrinsic raster size.
+        yield return ["svg_no_dimensions.svg"];
+    }
+
+    [Theory]
+    [MemberData(nameof(EdgeCaseUnsupported))]
+    public void Identify_edge_case_beyond_limits_returns_null_seekable(string file)
+    {
+        using var stream = OpenResource(file);
+        Assert.Null(_identifier.Identify(stream));
+    }
+
+    [Theory]
+    [MemberData(nameof(EdgeCaseUnsupported))]
+    public void Identify_edge_case_beyond_limits_returns_null_non_seekable(string file)
+    {
+        using var stream = new ForwardOnlyStream(ReadResource(file));
+        Assert.Null(_identifier.Identify(stream));
+    }
+
     private static Stream OpenResource(string name)
     {
         var asm = typeof(ImageIdentifierTests).Assembly;

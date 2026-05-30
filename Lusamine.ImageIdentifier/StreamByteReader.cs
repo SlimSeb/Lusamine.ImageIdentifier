@@ -13,7 +13,8 @@ public sealed class StreamByteReader : IByteReader
     /// <summary>Wraps a readable stream. The stream is read from its current position.</summary>
     public StreamByteReader(Stream stream)
     {
-        ArgumentNullException.ThrowIfNull(stream);
+        if (stream is null)
+            throw new ArgumentNullException(nameof(stream));
         if (!stream.CanRead)
             throw new ArgumentException("Stream must be readable.", nameof(stream));
         _stream = stream;
